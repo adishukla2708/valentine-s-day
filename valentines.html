@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💘 Forever Valentine?</title>
+  <style>
+    :root{
+      --bg1:#ff4d6d;
+      --bg2:#ff8fab;
+      --card:#ffffffcc;
+      --text:#2b2b2b;
+      --yes:#22c55e;
+      --yes2:#16a34a;
+      --no:#ef4444;
+      --shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, #ffe3ec 0%, transparent 55%),
+        radial-gradient(900px 600px at 85% 30%, #fff0f3 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+    }
+
+    /* floating hearts */
+    .hearts{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    .heart{
+      position:absolute;
+      width:18px;
+      height:18px;
+      transform: rotate(45deg);
+      opacity:.85;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
+      animation: floatUp linear infinite;
+    }
+
+    .heart::before,
+    .heart::after{
+      content:"";
+      position:absolute;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background: currentColor;
+    }
+    .heart{ background: currentColor; }
+    .heart::before{ left:-9px; top:0; }
+    .heart::after{ left:0; top:-9px; }
+
+    @keyframes floatUp{
+      from{ transform: translateY(110vh) rotate(45deg) scale(var(--s,1)); }
+      to{ transform: translateY(-20vh) rotate(45deg) scale(var(--s,1)); }
+    }
+
+    /* cupid */
+    .cupid{
+      position:fixed;
+      left: clamp(10px, 4vw, 36px);
+      top: clamp(10px, 3vh, 24px);
+      width: 120px;
+      height: 120px;
+      z-index:1;
+      opacity:.95;
+      filter: drop-shadow(0 18px 25px rgba(0,0,0,.18));
+      animation: drift 5.5s ease-in-out infinite;
+    }
+
+    @keyframes drift{
+      0%,100%{ transform: translate(0,0) rotate(-4deg); }
+      50%{ transform: translate(10px,8px) rotate(6deg); }
+    }
+
+    /* layout */
+    .wrap{
+      position:relative;
+      z-index:2;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding: 28px 16px;
+    }
+
+    .card{
+      width: min(760px, 92vw);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: clamp(18px, 3.2vw, 34px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background:
+        radial-gradient(400px 260px at 15% 20%, rgba(255,255,255,.55) 0%, transparent 60%),
+        radial-gradient(340px 240px at 85% 30%, rgba(255,255,255,.45) 0%, transparent 62%),
+        radial-gradient(420px 260px at 50% 100%, rgba(255,255,255,.35) 0%, transparent 65%);
+      transform: rotate(-6deg);
+      pointer-events:none;
+    }
+
+    .content{
+      position:relative;
+      display:grid;
+      gap: 18px;
+      text-align:center;
+      align-items:center;
+    }
+
+    .title{
+      font-size: clamp(26px, 3.6vw, 44px);
+      line-height:1.05;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size: clamp(14px, 1.6vw, 18px);
+      opacity:.9;
+    }
+
+    .question{
+      margin: 6px 0 0;
+      font-size: clamp(20px, 2.6vw, 32px);
+      font-weight: 800;
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      margin-inline:auto;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.6);
+      border: 1px solid rgba(255,255,255,.7);
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      width: fit-content;
+      font-weight: 800;
+    }
+
+    .badge span{ opacity:.9; }
+
+    /* personal photo */
+    .photo{
+      width: min(280px, 80vw);
+      height: min(280px, 80vw);
+      border-radius: 20px;
+      object-fit: cover;
+      border: 4px solid rgba(255,255,255,.8);
+      box-shadow: 0 20px 50px rgba(0,0,0,.15);
+      margin: 8px auto;
+      display: block;
+      filter: brightness(1.05) saturate(1.1);
+      transition: transform .3s ease, filter .3s ease;
+    }
+
+    .photo:hover{
+      transform: scale(1.02) translateY(-2px);
+      filter: brightness(1.1) saturate(1.2);
+    }
+
+    .photo-caption{
+      margin: 12px 0 6px;
+      font-size: clamp(13px, 1.4vw, 16px);
+      opacity: .85;
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .actions{
+      position:relative;
+      margin-top: 10px;
+      display:flex;
+      gap: 14px;
+      justify-content:center;
+      flex-wrap:wrap;
+      padding-bottom: 10px;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      font-weight: 900;
+      letter-spacing: .2px;
+      border-radius: 16px;
+      padding: 14px 20px;
+      font-size: 16px;
+      min-width: 150px;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      box-shadow: 0 18px 35px rgba(0,0,0,.16);
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    #yesBtn{
+      background: linear-gradient(180deg, var(--yes), var(--yes2));
+      color:white;
+    }
+
+    #yesBtn:hover{ transform: translateY(-2px); }
+
+    #noBtn{
+      background: linear-gradient(180deg, #ff5a5f, #e11d48);
+      color:white;
+      position:relative;
+    }
+
+    /* music pill */
+    .music{
+      position:fixed;
+      right: clamp(10px, 3vw, 18px);
+      top: clamp(10px, 3vh, 18px);
+      z-index: 20;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 16px 45px rgba(0,0,0,.14);
+      user-select:none;
+    }
+
+    .music .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background: #ef4444;
+      box-shadow: 0 0 0 6px rgba(239,68,68,.15);
+      animation: beat 1.2s ease-in-out infinite;
+    }
+
+    @keyframes beat{
+      0%,100%{ transform: scale(1); }
+      50%{ transform: scale(1.25); }
+    }
+
+    .music button{
+      min-width:auto;
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      background: #111827;
+      color: white;
+      box-shadow: none;
+    }
+
+    .music .label{
+      font-weight: 900;
+      opacity:.9;
+      font-size: 13px;
+      letter-spacing: .2px;
+      white-space:nowrap;
+    }
+
+    /* success modal */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.35);
+      z-index: 50;
+      padding: 18px;
+    }
+
+    .modal{
+      width:min(720px, 94vw);
+      background:white;
+      border-radius: 28px;
+      padding: 22px 18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.25);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .modal h2{
+      margin: 6px 0 10px;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing:-.02em;
+    }
+
+    .modal p{
+      margin:0;
+      opacity:.9;
+      font-size: 16px;
+      line-height:1.5;
+    }
+
+    .modal .mini{
+      margin-top: 14px;
+      font-weight:900;
+      opacity:.92;
+    }
+
+    .modal .close{
+      margin-top: 16px;
+      background: #111827;
+      color:white;
+      box-shadow: 0 18px 35px rgba(0,0,0,.22);
+    }
+
+    /* confetti hearts */
+    .confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .confetti i{
+      position:absolute;
+      width:12px;
+      height:12px;
+      transform: rotate(45deg);
+      opacity:.9;
+      animation: pop 1.6s ease-in-out infinite;
+    }
+
+    .confetti i::before,
+    .confetti i::after{
+      content:"";
+      position:absolute;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background: currentColor;
+    }
+
+    .confetti i{ background: currentColor; }
+    .confetti i::before{ left:-6px; top:0; }
+    .confetti i::after{ left:0; top:-6px; }
+
+    @keyframes pop{
+      0%{ transform: translateY(20px) rotate(45deg) scale(.9); opacity:0; }
+      25%{ opacity:1; }
+      100%{ transform: translateY(-120px) rotate(45deg) scale(1.25); opacity:0; }
+    }
+
+    /* small footer */
+    .footer{
+      margin-top: 4px;
+      font-size: 12px;
+      opacity:.7;
+    }
+
+    /* accessibility */
+    @media (prefers-reduced-motion: reduce){
+      .heart, .cupid{ animation: none !important; }
+      button{ transition:none !important; }
+      .music .dot{ animation:none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- music control pill -->
+  <div class="music" aria-label="Music controls">
+    <div class="dot" aria-hidden="true"></div>
+    <div class="label" id="musicLabel">Tap play for 💕romantic vibes💕</div>
+    <button id="musicBtn" type="button">Play ▶</button>
+  </div>
+
+  <!-- floating hearts background -->
+  <div class="hearts" id="hearts"></div>
+
+  <!-- cute cupid (simple inline SVG) -->
+  <svg class="cupid" viewBox="0 0 140 140" aria-hidden="true">
+    <defs>
+      <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#ffe3ec" stop-opacity=".95"/>
+      </linearGradient>
+      <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset="1" stop-color="#ffd6e0"/>
+      </linearGradient>
+    </defs>
+
+    <!-- wings -->
+    <path d="M32 58c-16 0-24 16-14 30 10 14 32 6 44-8-14 2-22-6-24-22z" fill="url(#wing)"/>
+    <path d="M108 58c16 0 24 16 14 30-10 14-32 6-44-8 14 2 22-6 24-22z" fill="url(#wing)"/>
+
+    <!-- head -->
+    <circle cx="70" cy="54" r="18" fill="#ffe0bd"/>
+    <path d="M56 50c6-10 22-10 28 0" fill="none" stroke="#ff4d6d" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- body -->
+    <path d="M52 78c8-10 28-10 36 0 6 8 6 22-2 30-10 10-22 10-32 0-8-8-8-22-2-30z" fill="url(#body)"/>
+
+    <!-- bow -->
+    <path d="M38 86c18-10 46-10 64 0" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 82l18 8-18 8" fill="none" stroke="#111827" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M98 82l-18 8 18 8" fill="none" stroke="#111827" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="70" cy="90" r="4" fill="#111827"/>
+
+    <!-- tiny heart arrow tip -->
+    <path d="M110 86l16-6" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+    <path d="M128 80l6 10-12 2z" fill="#ff4d6d"/>
+  </svg>
+
+  <main class="wrap">
+    <section class="card" role="dialog" aria-label="Valentine question">
+      <div class="content">
+        <div class="badge">💘<span>Pagal hoon Main, Pagal!!</span>🤪</div>
+
+        <h1 class="title">Hey <span id="herName">my love</span> 😌👻❤️‍🔥</h1>
+        <p class="subtitle">I built you a tiny webpage because words alone weren't enough. (Also I'm dramatic.)</p>
+
+        <img src="hands.jpeg" alt="Our precious memory" class="photo" />
+        <p class="photo-caption">This is us, and this is why I'm asking... 💕</p>
+
+        <p class="question">Will you be my forever Valentine?</p>
+
+        <div class="actions" id="actions">
+          <button id="yesBtn" type="button">Yes 💖</button>
+          <button id="noBtn" type="button" aria-label="No (this button is shy)">No 🙃</button>
+        </div>
+
+        <div class="footer">P.S. The "No" button has been permanently banned from existing.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Success overlay -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Success message">
+    <div class="modal">
+      <div class="confetti" id="confetti"></div>
+      <h2>YAYYYYY 🥺❤️‍🔥🥺❤️‍🔥🥺❤️‍🔥🥺❤️‍🔥🥺❤️‍🔥</h2>
+      <p>
+        Congratulations, you just made me the happiest human alive.
+        <br/>
+        Now you're officially stuck with me. Forever. No refunds. 😌
+      </p>
+      <div class="mini" id="couponLine">Redeem: 1000 hugs + 3 dates + unlimited forehead kisses</div>
+      <div class="mini" id="couponLine"> Please RSVP whenever you feel like loving me.</div>
+      <button class="close" id="closeBtn" type="button">Okay, my Bachha 😤</button>
+    </div>
+  </div>
+
+  <script>
+    // ============================
+    // 1) Personalization
+    // ============================
+    // Edit these 2 names and you're DONE.
+    const HER_NAME = "Kiddo";      // <-- change this
+    const YOUR_NAME = "Abhishek";    // <-- change this
+
+    document.getElementById('herName').textContent = HER_NAME;
+
+    // ============================
+    // 2) Floating hearts background
+    // ============================
+    const hearts = document.getElementById('hearts');
+    const heartColors = ['#fff', '#ffe3ec', '#ffd6e0', '#ffb3c6', '#ff8fab'];
+
+    function makeHeart(i){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      const size = 10 + Math.random() * 18;
+      h.style.width = size + 'px';
+      h.style.height = size + 'px';
+      h.style.left = (Math.random() * 100) + 'vw';
+      h.style.animationDuration = (6 + Math.random() * 9) + 's';
+      h.style.animationDelay = (-Math.random() * 10) + 's';
+      h.style.color = heartColors[i % heartColors.length];
+      h.style.setProperty('--s', (0.8 + Math.random() * 1.6).toFixed(2));
+      hearts.appendChild(h);
+    }
+
+    for(let i=0;i<26;i++) makeHeart(i);
+
+
+    // ============================
+    // 3) The infamous No button
+    // ============================
+    const noBtn = document.getElementById('noBtn');
+    const actions = document.getElementById('actions');
+
+    function clamp(n, min, max){
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function moveNoButton(){
+      // Move within the actions container
+      const a = actions.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+
+      const pad = 8;
+      const maxX = a.width - b.width - pad;
+      const maxY = a.height - b.height - pad;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noBtn.style.position = 'absolute';
+      noBtn.style.left = clamp(x, pad, maxX) + 'px';
+      noBtn.style.top  = clamp(y, pad, maxY) + 'px';
+
+      // micro wiggle
+      noBtn.style.transform = `translateY(-2px) rotate(${(-8 + Math.random()*16).toFixed(1)}deg)`;
+    }
+
+    requestAnimationFrame(() => {
+      actions.style.position = 'relative';
+      moveNoButton();
+    });
+
+    // Run away when approached
+    const fleeEvents = ['mouseenter','mouseover','pointerenter','touchstart'];
+    fleeEvents.forEach(evt => {
+      noBtn.addEventListener(evt, (e) => {
+        e.preventDefault();
+        moveNoButton();
+      }, {passive:false});
+    });
+
+    // If somehow clicked (shouldn't happen), still deny politely
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    });
+
+
+    // ============================
+    // 4) YES button flow + confetti
+    // ============================
+    const yesBtn = document.getElementById('yesBtn');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const confetti = document.getElementById('confetti');
+    const couponLine = document.getElementById('couponLine');
+
+    function sprinkleHearts(){
+      confetti.innerHTML = '';
+      const colors = ['#ff4d6d','#ff8fab','#ffd6e0','#22c55e','#111827'];
+      const count = 24;
+      for(let i=0;i<count;i++){
+        const c = document.createElement('i');
+        c.style.left = (Math.random()*100) + '%';
+        c.style.bottom = (-10 - Math.random()*30) + 'px';
+        c.style.animationDelay = (Math.random()*0.8) + 's';
+        c.style.animationDuration = (1.1 + Math.random()*1.2) + 's';
+        c.style.color = colors[i % colors.length];
+        confetti.appendChild(c);
+      }
+    }
+
+    yesBtn.addEventListener('click', () => {
+      overlay.style.display = 'grid';
+      sprinkleHearts();
+
+      couponLine.textContent = `Redeem: 1000 hugs + 3 dates + unlimited kisses (signed: ${YOUR_NAME})`;
+
+      yesBtn.textContent = 'YESSSS 💘💘💘';
+      yesBtn.style.filter = 'brightness(1.05)';
+    });
+
+    closeBtn.addEventListener('click', () => {
+      overlay.style.display = 'none';
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) overlay.style.display = 'none';
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') overlay.style.display = 'none';
+    });
+
+
+    // ============================
+    // 5) Romantic background music
+    // ============================
+    // NOTE: Autoplay is blocked by browsers. User must click Play.
+    // This is a tiny, sweet loop made with WebAudio (no external files needed).
+
+    const musicBtn = document.getElementById('musicBtn');
+    const musicLabel = document.getElementById('musicLabel');
+
+    let audioCtx = null;
+    let playing = false;
+    let nodes = [];
+
+    function stopMusic(){
+      nodes.forEach(n => { try{ n.stop?.(); }catch(_){} });
+      nodes.forEach(n => { try{ n.disconnect?.(); }catch(_){} });
+      nodes = [];
+      playing = false;
+      musicBtn.textContent = 'Play ▶';
+      musicLabel.textContent = 'Tap play for 💕romantic vibes💕';
+    }
+
+    function playMusic(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      // whimsical fairy-tale melody with sparkles
+      const now = audioCtx.currentTime;
+      const master = audioCtx.createGain();
+      master.gain.value = 0.12;
+      master.connect(audioCtx.destination);
+
+      // Create a reverb effect for magical atmosphere
+      const reverb = audioCtx.createConvolver();
+      const reverbGain = audioCtx.createGain();
+      reverbGain.gain.value = 0.3;
+      
+      // Simple reverb impulse response
+      const length = audioCtx.sampleRate * 2;
+      const impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+      for(let i = 0; i < length; i++){
+        const n = length - i;
+        impulse.getChannelData(0)[i] = (Math.random() * 2 - 1) * Math.pow(n / length, 2);
+        impulse.getChannelData(1)[i] = (Math.random() * 2 - 1) * Math.pow(n / length, 2);
+      }
+      reverb.buffer = impulse;
+      reverb.connect(reverbGain);
+      reverbGain.connect(master);
+
+      // Romantic melody inspired by "La Vie En Rose" / classic love songs
+      const melody = [
+        523.25, 587.33, 659.25, 587.33, // C5, D5, E5, D5 - gentle opening
+        523.25, 493.88, 523.25, 587.33, // C5, B4, C5, D5 - tender phrase
+        659.25, 698.46, 659.25, 587.33, // E5, F5, E5, D5 - romantic peak
+        523.25, 440.00, 493.88, 523.25  // C5, A4, B4, C5 - sweet resolution
+      ];
+
+      const noteDur = 0.6; // Slower, more romantic timing
+      const total = melody.length * noteDur;
+
+      // Main romantic melody with warm, intimate sound
+      melody.forEach((freq, i) => {
+        const t = now + i * noteDur;
+        
+        // Primary note with warm sine wave
+        const o1 = audioCtx.createOscillator();
+        const g1 = audioCtx.createGain();
+        
+        o1.type = 'sine';
+        o1.frequency.value = freq;
+        
+        // Soft, romantic envelope - gentle attack and longer sustain
+        g1.gain.setValueAtTime(0, t);
+        g1.gain.linearRampToValueAtTime(0.35, t + 0.08);
+        g1.gain.linearRampToValueAtTime(0.25, t + noteDur * 0.7);
+        g1.gain.exponentialRampToValueAtTime(0.0001, t + noteDur);
+        
+        o1.connect(g1);
+        g1.connect(master);
+        g1.connect(reverb);
+        
+        o1.start(t);
+        o1.stop(t + noteDur);
+        
+        nodes.push(o1, g1);
+
+        // Add romantic harmonies (thirds and fifths)
+        if(i % 3 === 0){
+          const o2 = audioCtx.createOscillator();
+          const g2 = audioCtx.createGain();
+          
+          o2.type = 'triangle';
+          o2.frequency.value = freq * 1.25; // perfect fifth harmony
+          
+          g2.gain.setValueAtTime(0, t);
+          g2.gain.linearRampToValueAtTime(0.12, t + 0.1);
+          g2.gain.linearRampToValueAtTime(0.08, t + noteDur * 0.8);
+          g2.gain.exponentialRampToValueAtTime(0.0001, t + noteDur);
+          
+          o2.connect(g2);
+          g2.connect(reverb);
+          
+          o2.start(t);
+          o2.stop(t + noteDur);
+          
+          nodes.push(o2, g2);
+        }
+
+        // Subtle string-like sustain on key notes
+        if(i % 4 === 0){
+          const o3 = audioCtx.createOscillator();
+          const g3 = audioCtx.createGain();
+          
+          o3.type = 'sawtooth';
+          o3.frequency.value = freq / 2; // octave lower for warmth
+          
+          // Low-pass filter for mellow sound
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 800;
+          
+          g3.gain.setValueAtTime(0, t);
+          g3.gain.linearRampToValueAtTime(0.06, t + 0.15);
+          g3.gain.linearRampToValueAtTime(0.04, t + noteDur * 0.9);
+          g3.gain.exponentialRampToValueAtTime(0.0001, t + noteDur);
+          
+          o3.connect(filter);
+          filter.connect(g3);
+          g3.connect(reverb);
+          
+          o3.start(t);
+          o3.stop(t + noteDur);
+          
+          nodes.push(o3, g3, filter);
+        }
+      });
+
+      // Romantic bass line with jazz-inspired chord progression
+      const bassChords = [
+        [261.63, 329.63], // C major
+        [246.94, 311.13], // B major
+        [220.00, 277.18], // A minor 
+        [196.00, 246.94]  // G major
+      ];
+      bassChords.forEach((chord, i) => {
+        const t = now + i * (total / bassChords.length);
+        const chordDur = total / bassChords.length;
+        
+        chord.forEach((freq, chordIndex) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          
+          o.type = chordIndex === 0 ? 'triangle' : 'sine';
+          o.frequency.value = freq / 2; // octave lower for bass
+          
+          g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(0.18, t + 0.15);
+          g.gain.linearRampToValueAtTime(0.12, t + chordDur - 0.3);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + chordDur);
+          
+          o.connect(g);
+          g.connect(master);
+          
+          o.start(t);
+          o.stop(t + chordDur);
+          
+          nodes.push(o, g);
+        });
+      });
+
+      nodes.push(reverb, reverbGain);
+
+      // loop by scheduling again
+      const timer = setInterval(() => {
+        if(!playing) return;
+        playMusic();
+      }, (total * 1000) - 50);
+
+      nodes.push({ stop: () => clearInterval(timer), disconnect: () => {} });
+
+      playing = true;
+      musicBtn.textContent = 'Pause ⏸';
+      musicLabel.textContent = 'Romantic mode: ON 💕🎵';
+    }
+
+    musicBtn.addEventListener('click', async () => {
+      if(!playing){
+        try{
+          if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+        }catch(_){ }
+        playMusic();
+      }else{
+        stopMusic();
+      }
+    });
+
+    // Stop music if tab is hidden (nice touch)
+    document.addEventListener('visibilitychange', () => {
+      if(document.hidden && playing) stopMusic();
+    });
+
+  </script>
+</body>
+</html>
